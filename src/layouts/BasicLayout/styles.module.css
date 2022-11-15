@@ -1,0 +1,18 @@
+.container {
+}
+
+.navRow {
+  position: absolute;
+  top: 21px;
+
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  gap: 42px;
+
+  padding: 0 10vw;
+  box-sizing: border-box;
+}

@@ -1,0 +1,13 @@
+.conatiner {
+  padding: 16px;
+  border: 2px solid darkslategrey;
+  border-radius: 16px;
+  background-color:cornflowerblue;
+
+  font-size: 16px;
+}
+
+.conatiner:hover {
+  background-color: burlywood;
+  cursor: pointer;
+}
