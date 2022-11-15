@@ -1,0 +1,12 @@
+.container {
+  padding: 12px;
+  border-radius: 16px;
+  background-color: azure;
+  border: 2px solid darkslateblue;
+  font-weight: 600;
+}
+
+.container:hover {
+  background-color: aqua;
+  cursor: pointer;
+}

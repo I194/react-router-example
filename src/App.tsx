@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import { AuthLayout, MainLayout, ProfileLayout, StoreLayout } from './layouts';
-import { AboutPage, AuthPage, BagPage, ForgotPasswordPage, MainPage, NotFoundPage, ProductsPage, ProfilePage, PurchasePage } from './pages';
+import { AboutPage, AuthPage, BagPage, ForgotPasswordPage, MainPage, NotFoundPage, ProductPage, ProductsPage, ProfilePage, PurchasePage } from './pages';
 
 function App() {
   // распространённая ошибка -- указывать путь через '/' во всех роутах -- это запрещено для вложенных роутов,
@@ -17,6 +17,7 @@ function App() {
         </Route>
         <Route path='/store' element={<StoreLayout />}>
           <Route index element={<ProductsPage />}/>
+          <Route path=':product' element={<ProductPage />}/>
           <Route path='bag' element={<BagPage />}/>
           <Route path='purchase' element={<PurchasePage />}/>
         </Route>

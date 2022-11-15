@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.topRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 42px;
+}
+
+.productInfo {
+  border: 2px dotted darkred;
+  border-radius: 42px;
+  padding: 21px;
+  box-sizing: border-box;
+}

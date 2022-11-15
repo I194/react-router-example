@@ -1,6 +1,7 @@
 import MainPage from "./MainPage/MainPage";
 import AboutPage from "./AboutPage/AboutPage";
 import ProductsPage from "./ProductsPage/ProductsPage";
+import ProductPage from "./ProductPage/ProductPage";
 import BagPage from "./BagPage/BagPage";
 import PurchasePage from "./PurchasePage/PurchasePage";
 
@@ -14,13 +15,11 @@ export {
   MainPage,
   AboutPage,
   ProductsPage,
+  ProductPage,
   BagPage,
   PurchasePage,
-
   AuthPage,
   ForgotPasswordPage,
   ProfilePage,
-
-  NotFoundPage
+  NotFoundPage,
 };
-
