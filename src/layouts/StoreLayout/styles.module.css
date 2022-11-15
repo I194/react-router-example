@@ -1,0 +1,8 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  background-color: cadetblue;
+  overflow: hidden;
+  padding: 10vh 25vw;
+  box-sizing: border-box;
+}
