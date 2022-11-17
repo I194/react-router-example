@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./styles.module.css";
 
-const AuthPage = () => {
+const ForgotPasswordPage = () => {
   return (
     <div className={styles.container}>
-      <h2>Auth Page</h2>
+      <h2>Forgot Password Page</h2>
     </div>
   )
 };
 
-export default AuthPage;
+export default ForgotPasswordPage;
 

@@ -1,0 +1,11 @@
+.container {
+  padding: 12px;
+  border-radius: 12px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.container:hover {
+  cursor: pointer;
+  opacity: 0.9;
+}

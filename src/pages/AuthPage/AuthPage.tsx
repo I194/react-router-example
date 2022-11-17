@@ -1,13 +1,15 @@
 import React from "react";
+import { SetAuthButton } from "../../components";
 import styles from "./styles.module.css";
 
-const ForgotPasswordPage = () => {
+const AuthPage = () => {
   return (
     <div className={styles.container}>
-      <h2>Forgot Password Page</h2>
+      <h2>Auth Page</h2>
+      <SetAuthButton type='auth' />
     </div>
   )
 };
 
-export default ForgotPasswordPage;
+export default AuthPage;
 
