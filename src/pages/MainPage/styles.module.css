@@ -1,3 +1,42 @@
 .container {
-  
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.about {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+p {
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+
+
+code {
+  font-size: 16px;
+  background-color: azure;
+}
+
+dt {
+  font-weight: 600;
+}
+
+pre {
+  white-space: pre-wrap;
+  background-color: aliceblue;
+  border-radius: 8px;
 }

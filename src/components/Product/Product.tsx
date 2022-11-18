@@ -19,6 +19,7 @@ const Product = ({ name, phrase, price }: Props) => {
   // то навигация для одного из них будет сломана и вы никогда не перейдёте на страницу с ним.
   const onProductClick = () => {
     navigate(name.trim().replaceAll(' ', '_'), {state: {name, phrase, price}});
+    // это выражение используется, чтоб убрать пробелы из названия и заменить их на нижние подчерквания
   };
 
   return (

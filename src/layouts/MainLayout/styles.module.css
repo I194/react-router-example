@@ -1,8 +1,8 @@
 .container {
   width: 100vw;
   height: 100vh;
-  background-color: blueviolet;
+  background-color:rgba(102, 205, 170, 0.75);
   overflow: hidden;
-  padding: 20vh 25vw;
+  padding: 10vh 15vw 0 15vw;
   box-sizing: border-box;
 }

@@ -13,13 +13,11 @@ function App() {
       <Routes>
         <Route path='/' element={<MainLayout />}>
           <Route index element={<MainPage />}/>
-          <Route path='/about' element={<AboutPage />}/>
+          <Route path='about' element={<AboutPage />}/>
         </Route>
         <Route path='/store' element={<StoreLayout />}>
           <Route index element={<ProductsPage />}/>
           <Route path=':product' element={<ProductPage />}/>
-          <Route path='bag' element={<BagPage />}/>
-          <Route path='purchase' element={<PurchasePage />}/>
         </Route>
         <Route path='/auth' element={<LoggedRouteProtector page={AuthLayout} />}>
           <Route index element={<AuthPage />}/>
