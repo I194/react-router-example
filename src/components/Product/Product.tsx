@@ -17,9 +17,16 @@ const Product = ({ name, phrase, price }: Props) => {
   // и тогда вы получите одинаковые ссылки там, где были нужны разные, и это сломает вам навигацию
   // Например, тут для создания ссылки используется поле name, и если оно вдруг повторится у двух компонентов Product,
   // то навигация для одного из них будет сломана и вы никогда не перейдёте на страницу с ним.
-  const onProductClick = () => {
-    navigate(name.trim().replaceAll(' ', '_'), {state: {name, phrase, price}});
+  const generateNameForURL = () => {
+    return name.trim().replaceAll(' ', '_');
     // это выражение используется, чтоб убрать пробелы из названия и заменить их на нижние подчерквания
+  }
+
+  const onProductClick = () => {
+    navigate(
+      generateNameForURL(), 
+      {state: {name, phrase, price}}
+    );
   };
 
   return (

@@ -164,6 +164,7 @@ export default App;
           Динамичность его в том заключается, что <code>product</code>, по сути, это лишь переменная, принимающая в себя любое строковое значение.
         </p>
         <p>Создав такой маршрут, вы сделали все адреса вида <code>{`/store/<any_name>`}</code> возможными. В этом и заключается вся суть динамических маршрутов.</p>
+        <p>Чтоб проверить динамические маршруты в действии, перейдите на страницу Store и там переходите на страницы продуктов. И не забывайте смотреть в адресную строку браузера.</p>
         <h4>Некоторые замечания</h4>
         <ol>
           <li>
@@ -192,6 +193,251 @@ export default App;
         <p>
           Стоит понимать, что защищённые маршруты это не специфика React Router и что нет какого-то универсального простого способа их сделать через React Router. 
           Но зато имеются все инструменты, чтобы довольно просто реализовать их самостоятельно. 
+        </p>
+        <p>В коде ниже представлены два защищённых маршрута:</p>
+        <pre><code>
+        {`<Route path='/auth' element={<LoggedRouteProtector page={AuthLayout} />}>
+  <Route index element={<AuthPage />}/>
+  <Route path='forgot-password' element={<ForgotPasswordPage />}/> 
+</Route>
+<Route path='/profile' element={<UnloggedRouteProtector page={ProfileLayout} />}>
+  <Route index element={<ProfilePage />}/>
+</Route>`} 
+        </code></pre>
+        <p>
+          Маршрут <code>/auth</code> защищён от попадания неаутентифицированных пользователей, а маршрут <code>/profile</code> — от попадания аутентифицированных пользователей.
+          Для реализации такого поведения к элементам, которые рендерятся при попадании на соответствующий адрес, добавлены обёртки — т.н. route protectors. 
+          Реализация у них одинаковая, рассмотрим один из них:
+        </p>
+        <pre><code>
+        {`import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+
+interface Props {
+  page: React.ComponentType;
+}
+
+const UnloggedRouteProtector = ({ page: Page }: Props) => {
+  // Обычно информация о правах пользователя находится в хранилище по типу Redux или MobX,
+  // и тогда получение информации о том, авторизован пользователь или нет, выглядит, например, вот так:
+  // const { isAuthtorized, status } = useAppSelector((state) => state.auth);
+  // однако в данном случае, чтоб не перегружать пример, воспользуемся для передачи данных обычным localStorage
+  const isAuthtorized = JSON.parse(localStorage.getItem('auth') || '');
+  const location = useLocation();
+
+  // if (status === "pending") {
+  //   // Возвращать тут можно что угодно, это делается лишь для того, чтоб пользователь лучше понимал, что происходит
+  //   return <div>loading...</div>;
+  // }
+  
+  if (isAuthtorized) return <Page />;
+  // если же пользователь не авторизован, он будет перенаправлен на страницу авторизации
+  return <Navigate to={"/auth"} state={{from: location.pathname}} />;
+};
+
+export default UnloggedRouteProtector;`} 
+        </code></pre>
+        <p>
+          Код выше — это UnloggedRouteProtector.tsx, он защищает маршрут <code>/profile</code>. 
+          Аналогичным образом работает и LoggedRouteProtector.tsx, защищающий маршрут <code>/auth</code>, 
+          вот единственное, что в нём отличается от примера выше: 
+        </p>
+        <pre><code>
+        {`if (!isAuthtorized) return <Page />;
+// если же пользователь авторизован, он будет перенаправлен на страницу откуда пришёл (если есть информация о ней),
+// или на главную страницу
+return <Navigate to={\`\${locationState?.from ? locationState.from : '/'}\`}/>;`} 
+        </code></pre>
+        <p>
+          Чтоб увидеть защищённые маршруты в действии, перейдите на страницу Profile. 
+          Если в вашем локальном хранилище (localStorage) нет записи <code>'auth'</code> или же она есть и её значение равно <code>'false'</code>, 
+          то вместо страницы Profile вы попадёте на страницу Auth. А если нажмёте на кнопку login, то будете авторизованы, страница обновится и вы попадёте на страницу Profile,
+          и, как бы вы не пытались, но на любую из страниц, адрес которой начинается с <code>/auth</code> (например, <code>/auth/forgot-password</code>), вы не попадёте. 
+          Чтоб попасть туда, вам придётся разлогиниться (кнопка logout на странице Profile).
+         </p>
+         <h4>useNavigate, Navigate и useLocation</h4>
+         <p>
+          Рассматривая защищённые роуты, вы могли заметить использование двух кастомных хуков и одного компоненты, импортируемых из react-router-dom: 
+          хуки <code>useNavigate</code>, <code>useLocation</code> и компонент <code>Navigate</code>. 
+          Это самые часто используемые и самые базовые хуки и компоненты, необходимые для построения простейшего роутинга в приложении.
+          Рассмотрим каждый из них
+         </p>
+         <dl>
+          <dt>useNavigate</dt>
+          <dd>
+            Этот хук возвращает функцию, которая позволяет программно осуществлять навигацию пользователя. 
+            <p>
+              Например, в данном приложении с использованием этого хука созданы кнопки навигационной панели. 
+              Вот так выглядит компонент NavButton.tsx:
+            </p>
+            <pre><code>
+            {`import React from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./styles.module.css";
+
+interface NavButtonProps {
+  to: string;
+  label: string;
+}
+
+const NavButton = ({to, label}: NavButtonProps) => {
+  const navigate = useNavigate();
+
+  const onNavBtnClick = () => {
+    navigate(to);
+  };
+
+  return (
+    <button className={styles.conatiner} onClick={onNavBtnClick}>
+      { label }
+    </button>
+  );
+};
+
+export default NavButton;`} 
+            </code></pre>
+            <p>
+              Навигация здесь происходит внутри функции <code>onNavBtnClick</code>, а адрес, на который нужно перейти,
+              передаётся в кнопку как пропс.
+              Подробнее про хук useNavigate вы можете прочесть в <a href="https://reactrouter.com/en/main/hooks/use-navigate" target='_blank' rel="noreferrer">документации React Router</a>.
+            </p>
+          </dd>
+          
+          <dt>Navigate</dt>
+          <dd>
+            Компонент Navigate выполняет ту же роль, что и хук useNavigate. По сути, этот компонент — обёртка вокруг хука useNavigate.
+            <p>
+              Использовать можно как его, так и непосредственно хук useNavigate, это зависит только от ваших предпочтений. 
+              Однако, если вы пишете ваше React приложение на классовых компонентах, то хуков у вас в арсенале не будет и 
+              компонент Navigate полностью заменит useNavigate. 
+            </p>
+            <p>
+              Подробнее про компонент Navigate вы можете прочесть в <a href="https://reactrouter.com/en/main/components/navigate" target='_blank' rel="noreferrer">документации React Router</a>.
+            </p>
+          </dd>
+
+          <dt>useLocation</dt>
+          <dd>
+            Этот хук возвращает объект <code>location</code>, содержащий некоторую информацию о текущей странице. У этого объекта следующие поля:
+            <dl>
+              <dt>location.pathname</dt>
+              <dd>это строка, содержащая символ <code>'/'</code>, за которым следует остальная часть URL-адреса до символа <code>'?'</code></dd>
+              <dt>location.search</dt>
+              <dt>location.hash</dt>
+              <dt>location.key</dt>
+              <dd>это параметры, которые здесь рассматриваться не будут, но вы можете прочесть о них в <a href="https://github.com/remix-run/history/blob/main/docs/api-reference.md#location" target='_blank' rel="noreferrer">документации History API</a></dd>
+              <dt>location.state</dt>
+              <dd>
+                это хранилище информации, никак не влияющей на URL, но передающейся при переходе на конкретный URL.
+                <p> 
+                  Хранить там можно любую информацию и при этом со стороны History API нет ограничения на её количество. 
+                  Однако, такое ограничение, вероятно, есть со стороны браузеров. 
+                  Достоверно неизвестно, какое ограничение у каждого из браузеров для размера объекта location.state, однако, 
+                  есть информация, что раньше в документации Firefox было указано, что максимум это 640kB. Но сейчас этой информации нет
+                  и потому стоит полагаться лишь на здравый смысл и не использовать <code>location.state</code> для хранения и передачи больших объемов
+                  критически важных для пользователя данных.
+                </p>
+              </dd>
+            </dl>
+            <p>
+              Например, в данном приложении с использованием этого хука и объекта <code>location.state</code> 
+              данные из страницы <code>/store</code> пробрасываются в страницу <code>/store/:product</code> 
+            </p>
+            <p>Вот как выглядит получение и использование данных из <code>location.state</code> на странице продукта (ProductPage.tsx):</p>
+            <pre><code>
+            {`import React from "react";
+import { useLocation } from "react-router-dom";
+import { BackNavButton } from "../../components";
+import styles from "./styles.module.css";
+
+const ProductPage = () => {
+
+  const location = useLocation();
+
+  const { name, phrase, price } = location.state;
+  
+  return (
+    <div className={styles.container}>
+      <div className={styles.topRow}>
+        <h2>Product Page</h2>
+      </div>
+      <div className={styles.productInfo}>
+        <h2>{ name }</h2>
+        <h4>{ phrase }</h4>
+        <h3>\${ price }</h3>
+      </div>
+      <BackNavButton />
+    </div>
+  )
+};
+
+export default ProductPage;`} 
+            </code></pre>
+            <p>А записываются данные в <code>location.state</code> в компоненте продукта (Product), используемом на странице <code>/store</code>:</p>
+            <pre><code>
+            {`import React from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./styles.module.css";
+
+interface Props {
+  name: string;
+  phrase?: string;
+  price: number;
+}
+
+const Product = ({ name, phrase, price }: Props) => {
+
+  const navigate = useNavigate();
+
+  const generateNameForURL = () => {
+    return name.trim().replaceAll(' ', '_');
+    // это выражение используется, чтоб убрать пробелы из названия и заменить их на нижние подчерквания
+  }
+
+  const onProductClick = () => {
+    navigate(
+      generateNameForURL(), 
+      {state: {name, phrase, price}}
+    );
+  };
+
+  return (
+    <div className={styles.container} onClick={onProductClick}>
+      <h2>{ name }</h2>
+      <h4>{ phrase }</h4>
+      <h3>\${ price }</h3>
+    </div>
+  );
+};
+
+export default Product;`} 
+            </code></pre>
+            <p>
+              Запись происходит непосредственно при переходе на другую страницу — содержимое хранилища записывается как параметр функции <code>navigate</code>:
+              <code>{`navigate(generateNameForURL(), {state: {name, phrase, price}});`}</code>.
+            </p>
+            <p>
+              Вариаций того, как использовать это хранилище и как в целом работать с хуком useLocation, великое множество. Всё зависит от того, что вы хотите сделать.
+              Подробнее про хук useLocation вы можете прочесть в <a href="https://reactrouter.com/en/main/hooks/use-location" target='_blank' rel="noreferrer">документации React Router</a>.
+            </p>
+          </dd>
+        </dl>
+        <h2>Послесловие</h2>
+        <p>
+          Этот сайт является базовым примером использования библиотеки react-router-dom и потому в нём не затронуты многие интересные темы. 
+          Например, тема запросов в URL (?), тема якорей в URL (#) и работа с ними в React Router. Подробнее разобраться с ними вы можете 
+          в <a href="https://reactrouter.com/en/main/hooks/use-location" target='_blank' rel="noreferrer">документации React Router</a>.
+          Изучите хуки <code>useParams</code> и <code>useMatch</code>, подробнее рассмотрите History API чтоб лучше работать с хуком 
+          <code>useLocation</code>.
+        </p>
+        <p>
+          Кроме того, в данном тексте было уделено мало внимания теме построения навигационной панели и теме лэйаутов (Layouts).
+          Чтобы подробнее с ними разобраться, изучите 
+          <a href="https://github.com/I194/react-router-example" target='_blank' rel="noreferrer">код приложения</a>
+          и посмотрите в документации React Router на компоненты
+          <a href="https://reactrouter.com/en/main/components/outlet" target='_blank' rel="noreferrer">Outlet</a> и
+          <a href="https://reactrouter.com/en/main/components/nav-link" target='_blank' rel="noreferrer">NavLink</a>.
+          Важный момент: компонент NavLink не использовался в данном приложении, однако он довольно часто используется в реальных проектах. 
         </p>
       </div>
     </div>

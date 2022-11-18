@@ -6,8 +6,8 @@ interface Props {
 }
 
 const LoggedRouteProtector = ({ page: Page }: Props) => {
-  // Обычно информация о сессии хранится в куках и оттуда передаётся в хранилище по типу Redux или MobX,
-  // и тогда получение информации о том, авторизован пользователь или нет, выглядит вот так:
+  // Обычно информация о правах пользователя находится в хранилище по типу Redux или MobX,
+  // и тогда получение информации о том, авторизован пользователь или нет, выглядит, например, вот так:
   // const { isAuthtorized, status } = useAppSelector((state) => state.auth);
   // однако в данном случае, чтоб не перегружать пример, воспользуемся для передачи данных обычным localStorage
   const isAuthtorized = JSON.parse(localStorage.getItem('auth') || '');
@@ -21,7 +21,8 @@ const LoggedRouteProtector = ({ page: Page }: Props) => {
   // }
 
   if (!isAuthtorized) return <Page />;
-
+  // если же пользователь авторизован, он будет перенаправлен на страницу откуда пришёл (если есть информация о ней),
+  // или на главную страницу
   return <Navigate to={`${locationState?.from ? locationState.from : '/'}`}/>;
 };
 

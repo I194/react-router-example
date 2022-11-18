@@ -8,18 +8,17 @@ interface NavButtonProps {
 }
 
 const NavButton = ({to, label}: NavButtonProps) => {
-  
   const navigate = useNavigate();
 
   const onNavBtnClick = () => {
     navigate(to);
-  }
+  };
 
   return (
     <button className={styles.conatiner} onClick={onNavBtnClick}>
       { label }
     </button>
-  )
+  );
 };
 
 export default NavButton;
