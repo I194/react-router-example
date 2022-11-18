@@ -222,7 +222,7 @@ const UnloggedRouteProtector = ({ page: Page }: Props) => {
   // и тогда получение информации о том, авторизован пользователь или нет, выглядит, например, вот так:
   // const { isAuthtorized, status } = useAppSelector((state) => state.auth);
   // однако в данном случае, чтоб не перегружать пример, воспользуемся для передачи данных обычным localStorage
-  const isAuthtorized = JSON.parse(localStorage.getItem('auth') || '');
+  const isAuthtorized = JSON.parse(localStorage.getItem('auth') || 'false');
   const location = useLocation();
 
   // if (status === "pending") {
